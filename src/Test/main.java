@@ -19,12 +19,13 @@ public class main {
         int cantPasajeros = 10;
         int cantAerolineas = 10;
         int capPuestosAtencion = 1;
-
+        int cantSegundos = 2;
+        
         int capMaxTren = 5;
 
         Aeropuerto aerolinea = new Aeropuerto(cantAerolineas, capMaxTren, capPuestosAtencion);
 
-        Reloj r = new Reloj(aerolinea);
+        Reloj r = new Reloj(aerolinea, cantSegundos);
         Thread reloj = new Thread(r, "RELOJ");
         reloj.start();
 

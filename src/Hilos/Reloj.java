@@ -17,8 +17,9 @@ public class Reloj implements Runnable {
     private int pasoTiempo = 100; //100 = 1 hora
     private int frecuenciaActualizacion =1; // Pasa "pasoTiempo" cada "frecuenciaActualizacion" segundos
 
-    public Reloj(Aeropuerto aerolinea) {
+    public Reloj(Aeropuerto aerolinea, int segundos) {
         this.aerolinea = aerolinea;
+        this.frecuenciaActualizacion = segundos;
     }
 
     public void run() {

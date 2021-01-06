@@ -24,6 +24,8 @@ public class Aeropuerto {
     private int cantAerolineas;
     private Cola colaPuestoAtencion; //Para el puesto de atencion, tiene que ser por orden de llegada
     private int[] capacidadesAtencion;
+    private int[] turnosAerolineas;
+    private int[] turnosDesdeCero;
     private boolean atendiendo = false;
     private Vuelo[] vuelosAerolineas;
     private Cola[] ordenEntrada;
@@ -41,10 +43,15 @@ public class Aeropuerto {
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
         this.ordenEntrada = new Cola[cantAerolineas];
+        this.turnosAerolineas = new int[cantAerolineas];
+        this.turnosDesdeCero = new int[cantAerolineas];
+
         this.vuelosAerolineas = new Vuelo[20];
 
         for (int i = 0; i < cantAerolineas; i++) {
             this.capacidadesAtencion[i] = capPuestosAtencion;
+            this.turnosAerolineas[i] = 1;
+            this.turnosDesdeCero[i] = 1;
         }
 
         for (int i = 0; i < 20; i++) {
@@ -52,9 +59,11 @@ public class Aeropuerto {
         }
     }
 
-    public Vuelo irAPuestoDeInformes() {
+    public Object[] irAPuestoDeInformes() {
+        Object[] resultado = new Object[2];
         Vuelo vuelo = null;
         Random r = new Random();
+        int turnoPasajero;
 
         this.ingresarAeropuerto.lock();
         try {
@@ -77,12 +86,20 @@ public class Aeropuerto {
 
         try {
             this.semOtorgarVuelo.acquire();
-            vuelo = this.vuelosAerolineas[r.nextInt(this.cantAerolineas) + 1];
+
+            int aero = r.nextInt(this.cantAerolineas) + 1;
+            vuelo = this.vuelosAerolineas[aero - 1];
+            turnoPasajero = this.turnosDesdeCero[aero - 1];
+            this.turnosDesdeCero[aero - 1]++;
+            System.out.println("AHORA EL TURNO DE AEROLINEA " + aero + " ES " + this.turnosDesdeCero[aero - 1]);
+            resultado[0] = vuelo;
+            resultado[1] = turnoPasajero;
+
             this.semOtorgarVuelo.release();
         } catch (Exception e) {
         }
 
-        return vuelo;
+        return resultado;
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN
@@ -125,6 +142,7 @@ public class Aeropuerto {
                 System.out.println(Thread.currentThread().getName() + " entró al puesto de atencion de la aerolinea " + numAerolinea);
             } else {
                 System.out.println("El puesto de atención de la aerolinea " + numAerolinea + " está lleno, " + Thread.currentThread().getName() + " se dirige al hall central a esperar.");
+
             }
             this.mutex.release();
 

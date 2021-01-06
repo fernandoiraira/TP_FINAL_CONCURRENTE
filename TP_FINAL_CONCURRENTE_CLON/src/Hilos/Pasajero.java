@@ -15,7 +15,9 @@ import Utiles.Vuelo;
 public class Pasajero implements Runnable {
 
     private Aeropuerto aeropuerto;
+    private Object[] info;
     private Vuelo vuelo;
+    private int turno;
 
     public Pasajero(Aeropuerto aerolinea) {
         this.aeropuerto = aerolinea;
@@ -23,8 +25,11 @@ public class Pasajero implements Runnable {
 
     public void run() {
 
-        vuelo = this.aeropuerto.irAPuestoDeInformes();
+        info = this.aeropuerto.irAPuestoDeInformes();
+        vuelo = (Vuelo) info[0];
+        turno = (int) info[1];
         System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.vuelo.getAerolinea());
-        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
+        System.out.println(Thread.currentThread().getName() + ": Mi turno para la aerolinea " + this.vuelo.getAerolinea() + " es: " + this.turno);
+//        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
     }
 }

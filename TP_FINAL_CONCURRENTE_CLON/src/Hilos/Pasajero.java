@@ -14,17 +14,17 @@ import Utiles.Vuelo;
  */
 public class Pasajero implements Runnable {
 
-    private Aeropuerto aerolinea;
-    private int numAerolinea;
+    private Aeropuerto aeropuerto;
     private Vuelo vuelo;
 
     public Pasajero(Aeropuerto aerolinea) {
-        this.aerolinea = aerolinea;
+        this.aeropuerto = aerolinea;
     }
 
     public void run() {
-        this.numAerolinea = this.aerolinea.ingresarAeropuerto();
-        System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.numAerolinea);
-        this.aerolinea.dirigirseAPuestoDeAtencion(this.numAerolinea);
+
+        vuelo = this.aeropuerto.irAPuestoDeInformes();
+        System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.vuelo.getAerolinea());
+        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
     }
 }

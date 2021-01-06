@@ -24,6 +24,7 @@ public class Aeropuerto {
     private Cola colaPuestoAtencion; //Para el puesto de atencion, tiene que ser por orden de llegada
     private int[] capacidadesAtencion;
     private boolean atendiendo = false;
+    private Cola[] ordenEntrada;
 
     private Semaphore mutex = new Semaphore(1);
 
@@ -34,6 +35,7 @@ public class Aeropuerto {
         this.cantAerolineas = cantidadAerolineas;
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
+        this.ordenEntrada = new Cola[cantAerolineas];
 
         for (int i = 0; i < cantAerolineas; i++) {
             this.capacidadesAtencion[i] = capPuestosAtencion;

@@ -6,6 +6,7 @@
 package Compartido;
 
 import Utiles.Cola;
+import Utiles.Vuelo;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
@@ -24,26 +25,35 @@ public class Aeropuerto {
     private Cola colaPuestoAtencion; //Para el puesto de atencion, tiene que ser por orden de llegada
     private int[] capacidadesAtencion;
     private boolean atendiendo = false;
+    private Vuelo[] vuelosAerolineas;
     private Cola[] ordenEntrada;
 
     private Semaphore mutex = new Semaphore(1);
+    private Semaphore semOtorgarVuelo = new Semaphore(1);
 
     private Lock ingresarAeropuerto = new ReentrantLock();
     private Condition esperarPorLaHora = ingresarAeropuerto.newCondition();
 
     public Aeropuerto(int cantidadAerolineas, int capTren, int capPuestosAtencion) {
+        Random t = new Random();
+
         this.cantAerolineas = cantidadAerolineas;
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
         this.ordenEntrada = new Cola[cantAerolineas];
+        this.vuelosAerolineas = new Vuelo[20];
 
         for (int i = 0; i < cantAerolineas; i++) {
             this.capacidadesAtencion[i] = capPuestosAtencion;
         }
+
+        for (int i = 0; i < 20; i++) {
+            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
+        }
     }
 
-    public int irAPuestoDeInformes() {
-        int res;
+    public Vuelo irAPuestoDeInformes() {
+        Vuelo vuelo = null;
         Random r = new Random();
 
         this.ingresarAeropuerto.lock();
@@ -65,9 +75,14 @@ public class Aeropuerto {
         } catch (Exception e) {
         }
 
-        res = r.nextInt(this.cantAerolineas) + 1;
+        try {
+            this.semOtorgarVuelo.acquire();
+            vuelo = this.vuelosAerolineas[r.nextInt(this.cantAerolineas) + 1];
+            this.semOtorgarVuelo.release();
+        } catch (Exception e) {
+        }
 
-        return res;
+        return vuelo;
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN

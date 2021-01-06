@@ -21,7 +21,7 @@ public class main {
         int capPuestosAtencion = 1;
         int cantSegundos = 2;
 
-        int capMaxTren = 5;
+        int capMaxTren = 4;
 
         Aeropuerto aerolinea = new Aeropuerto(cantAerolineas, capMaxTren, capPuestosAtencion);
 

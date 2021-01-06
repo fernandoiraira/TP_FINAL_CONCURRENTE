@@ -87,11 +87,9 @@ public class Aeropuerto {
         try {
             this.semOtorgarVuelo.acquire();
 
-            int aero = r.nextInt(this.cantAerolineas) + 1;
-            vuelo = this.vuelosAerolineas[aero - 1];
-            turnoPasajero = this.turnosDesdeCero[aero - 1];
-            this.turnosDesdeCero[aero - 1]++;
-            System.out.println("AHORA EL TURNO DE AEROLINEA " + aero + " ES " + this.turnosDesdeCero[aero - 1]);
+            vuelo = this.vuelosAerolineas[r.nextInt(20)];
+            turnoPasajero = this.turnosDesdeCero[vuelo.getAerolinea() - 1];
+            this.turnosDesdeCero[vuelo.getAerolinea() - 1]++;
             resultado[0] = vuelo;
             resultado[1] = turnoPasajero;
 

@@ -42,7 +42,7 @@ public class Aeropuerto {
         }
     }
 
-    public int ingresarAeropuerto() {
+    public int irAPuestoDeInformes() {
         int res;
         Random r = new Random();
 

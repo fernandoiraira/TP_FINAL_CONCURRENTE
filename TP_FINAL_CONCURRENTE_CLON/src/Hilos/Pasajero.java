@@ -6,6 +6,7 @@
 package Hilos;
 
 import Compartido.Aeropuerto;
+import Utiles.Vuelo;
 
 /**
  *
@@ -15,6 +16,7 @@ public class Pasajero implements Runnable {
 
     private Aeropuerto aerolinea;
     private int numAerolinea;
+    private Vuelo vuelo;
 
     public Pasajero(Aeropuerto aerolinea) {
         this.aerolinea = aerolinea;

@@ -65,6 +65,7 @@ public class Aeropuerto {
         Random r = new Random();
         int turnoPasajero;
 
+        // Esta parte seguramente la voy a cambiar, porque dice que el aeropuerto esta abierto siempre, pero solamente ATIENDEN de 06:00 a22:00
         this.ingresarAeropuerto.lock();
         try {
             while (!atendiendo) {
@@ -87,9 +88,16 @@ public class Aeropuerto {
         try {
             this.semOtorgarVuelo.acquire();
 
+            // Toma 1 vuelo de los 20 que se generaron (1 por cada puesto de embarque)
             vuelo = this.vuelosAerolineas[r.nextInt(20)];
+
+            // Se le asigna el turno correspondiente al puesto de atencion al que se tiene que dirigir
             turnoPasajero = this.turnosDesdeCero[vuelo.getAerolinea() - 1];
+
+            // Se sube el turno al puesto de atencion al que se dirigio el pasajero
             this.turnosDesdeCero[vuelo.getAerolinea() - 1]++;
+
+            // Se guarda el vuelo y el turno de Pasajero en un arreglo de Object (que depende del puesto de informe al que se dirige), para luego devolverselo al hilo Pasajero 
             resultado[0] = vuelo;
             resultado[1] = turnoPasajero;
 

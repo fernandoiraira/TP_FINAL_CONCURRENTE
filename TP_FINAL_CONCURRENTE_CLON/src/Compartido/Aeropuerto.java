@@ -19,10 +19,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Aeropuerto {
 
-    private int hora = 300; // Apenas empieza, el hilo Reloj le suma 100, para que empiece a las 06:00 hs
+    private int hora = 300;
     private int capMaxTren, capActualTren = 0;
     private int cantAerolineas;
-    private Cola colaPuestoAtencion; //Para el puesto de atencion, tiene que ser por orden de llegada
     private int[] capacidadesAtencion;
     private int[] turnosAerolineas;
     private int[] turnosDesdeCero;

@@ -120,8 +120,6 @@ public class Aeropuerto {
     public void guardiaTransferirPasajero(int aerolinea) {
         this.arrayPuestos[aerolinea - 1].transferirPasajeroDesdeHallCentral();
     }
-    
-    
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN
     public void pasarTiempo(int pasoTiempo) {

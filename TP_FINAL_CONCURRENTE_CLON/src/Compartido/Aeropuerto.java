@@ -30,13 +30,15 @@ public class Aeropuerto {
     private int[] turnosDesdeCero;
     private boolean atendiendo = false;
     private Vuelo[] vuelosAerolineas;
-    private Cola[] ordenEntrada;
+    private Cola[] colaHallCentral;
 
     private Semaphore mutex = new Semaphore(1);
     private Semaphore semOtorgarVuelo = new Semaphore(1);
+    private Semaphore semIngresarPasajero = new Semaphore(1);
 
     private Lock ingresarAeropuerto = new ReentrantLock();
     private Condition esperarPorLaHora = ingresarAeropuerto.newCondition();
+    private PuestoAtencion arrayPuestos[];
 
     private BlockingQueue<Pasajero> asd = new ArrayBlockingQueue<Pasajero>(3);
 
@@ -46,9 +48,10 @@ public class Aeropuerto {
         this.cantAerolineas = cantidadAerolineas;
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
-        this.ordenEntrada = new Cola[cantAerolineas];
+        this.colaHallCentral = new Cola[cantAerolineas];
         this.turnosAerolineas = new int[cantAerolineas];
         this.turnosDesdeCero = new int[cantAerolineas];
+        this.arrayPuestos = new PuestoAtencion[cantAerolineas];
 
         this.vuelosAerolineas = new Vuelo[20];
 
@@ -61,6 +64,15 @@ public class Aeropuerto {
         for (int i = 0; i < 20; i++) {
             this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
         }
+    }
+
+    public void entrarPasajero() {
+        
+
+    }
+
+    public void entrarAPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) {
+
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN

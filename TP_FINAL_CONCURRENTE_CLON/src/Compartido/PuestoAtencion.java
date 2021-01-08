@@ -28,7 +28,7 @@ public class PuestoAtencion {
         this.linkedPasajeros.add(p);
     }
 
-    public void retirarPasajero() {
+    public void transferirPasajero() {
         Pasajero res = null;
 
         try {
@@ -39,6 +39,20 @@ public class PuestoAtencion {
         try {
             this.block.put(res);
             System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
+        } catch (Exception e) {
+        }
+    }
+
+    public void atenderPasajero() {
+        Pasajero p;
+
+        try {
+            p = this.block.take();
+
+            System.out.println(Thread.currentThread().getName() + " esta atendiendo a un pasajero...");
+            Thread.sleep(3000);
+            
+
         } catch (Exception e) {
         }
 

@@ -5,8 +5,16 @@
  */
 package Compartido;
 
+import Hilos.Pasajero;
+import Utiles.Cola;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -14,15 +22,63 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class PuestoAtencion {
 
+    private Cola colaPasajeros = new Cola();
+
     private Lock ingresarPasajero = new ReentrantLock();
-    private Aeropuerto aero;
+    private Lock lockSacarPasajero = new ReentrantLock();
+    private Condition esperaAQueHayaPasajero = lockSacarPasajero.newCondition();
 
-    public PuestoAtencion(Aeropuerto aeropuerto) {
-        this.aero = aeropuerto;
+    private BlockingQueue<Pasajero> asd = new ArrayBlockingQueue<Pasajero>(3);
+
+    public void ingresar(Pasajero p) {
+        this.ingresarPasajero.lock();
+        try {
+
+            this.colaPasajeros.poner(p);
+            System.out.println(Thread.currentThread().getName() + " ingreso al puesto de atencion.");
+
+        } catch (Exception e) {
+        } finally {
+            this.ingresarPasajero.unlock();
+        }
+
+        this.lockSacarPasajero.lock();
+        try {
+            this.esperaAQueHayaPasajero.notify();
+        } finally {
+            this.lockSacarPasajero.unlock();
+        }
     }
 
-    public Lock getLock() {
-        return ingresarPasajero;
+    public Cola getCola() {
+        return this.colaPasajeros;
     }
 
+    public Pasajero transferirPasajeroDesdeHallCentral() {
+        Pasajero p;
+
+        this.lockSacarPasajero.lock();
+        try {
+            while (this.colaPasajeros.esVacia()) {
+                try {
+                    this.esperaAQueHayaPasajero.await();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(PuestoAtencion.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+            p = (Pasajero) this.colaPasajeros.obtenerFrente();
+            this.colaPasajeros.sacar();
+
+            try {
+                this.asd.put(p);
+            } catch (Exception e) {
+            }
+
+        } finally {
+            this.lockSacarPasajero.unlock();
+        }
+        return p;
+    }
 }

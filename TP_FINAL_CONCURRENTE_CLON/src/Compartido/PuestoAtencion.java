@@ -48,57 +48,57 @@ public class PuestoAtencion {
         return res;
     }
 
-    public void ingresar(Pasajero p) {
-        this.ingresarPasajero.lock();
-        try {
-
-            this.colaPasajeros.poner(p);
-            System.out.println(Thread.currentThread().getName() + " ingreso al puesto de atencion.");
-
-        } catch (Exception e) {
-        } finally {
-            this.ingresarPasajero.unlock();
-        }
-
-        this.lockSacarPasajero.lock();
-        try {
-            this.esperaAQueHayaPasajero.signal();
-        } finally {
-            this.lockSacarPasajero.unlock();
-        }
-    }
-
-    public Cola getCola() {
-        return this.colaPasajeros;
-    }
-
-    public Pasajero transferirPasajeroDesdeHallCentral() {
-        Pasajero p;
-
-        this.lockSacarPasajero.lock();
-        try {
-            while (this.colaPasajeros.esVacia()) {
-                try {
-                    this.esperaAQueHayaPasajero.await();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(PuestoAtencion.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-            }
-
-            p = (Pasajero) this.colaPasajeros.obtenerFrente();
-            this.colaPasajeros.sacar();
-
-            try {
-
-                this.asd.put(p);
-                System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
-            } catch (Exception e) {
-            }
-
-        } finally {
-            this.lockSacarPasajero.unlock();
-        }
-        return p;
-    }
+//    public void ingresar(Pasajero p) {
+//        this.ingresarPasajero.lock();
+//        try {
+//
+//            this.colaPasajeros.poner(p);
+//            System.out.println(Thread.currentThread().getName() + " ingreso al puesto de atencion.");
+//
+//        } catch (Exception e) {
+//        } finally {
+//            this.ingresarPasajero.unlock();
+//        }
+//
+//        this.lockSacarPasajero.lock();
+//        try {
+//            this.esperaAQueHayaPasajero.signal();
+//        } finally {
+//            this.lockSacarPasajero.unlock();
+//        }
+//    }
+//
+//    public Cola getCola() {
+//        return this.colaPasajeros;
+//    }
+//
+//    public Pasajero transferirPasajeroDesdeHallCentral() {
+//        Pasajero p;
+//
+//        this.lockSacarPasajero.lock();
+//        try {
+//            while (this.colaPasajeros.esVacia()) {
+//                try {
+//                    this.esperaAQueHayaPasajero.await();
+//                } catch (InterruptedException ex) {
+//                    Logger.getLogger(PuestoAtencion.class.getName()).log(Level.SEVERE, null, ex);
+//                }
+//
+//            }
+//
+//            p = (Pasajero) this.colaPasajeros.obtenerFrente();
+//            this.colaPasajeros.sacar();
+//
+//            try {
+//
+//                this.asd.put(p);
+//                System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
+//            } catch (Exception e) {
+//            }
+//
+//        } finally {
+//            this.lockSacarPasajero.unlock();
+//        }
+//        return p;
+//    }
 }

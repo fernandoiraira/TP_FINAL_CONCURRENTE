@@ -8,6 +8,7 @@ package Test;
 import Compartido.Aeropuerto;
 import Hilos.Guardia;
 import Hilos.Pasajero;
+import Hilos.Recepcionista;
 import Hilos.Reloj;
 
 /**
@@ -34,6 +35,12 @@ public class main {
             Guardia g = new Guardia(aeropuerto, i);
             Thread guardia = new Thread(g, "GUARDIA " + i);
             guardia.start();
+        }
+
+        for (int i = 1; i < cantAerolineas; i++) {
+            Recepcionista rece = new Recepcionista(aeropuerto, i);
+            Thread recepcionista = new Thread(rece, "RECEPCIONISTA " + i);
+            recepcionista.start();
         }
 
         for (int i = 1; i <= cantPasajeros; i++) {

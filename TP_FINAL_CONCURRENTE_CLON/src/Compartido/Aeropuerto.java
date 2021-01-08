@@ -63,17 +63,65 @@ public class Aeropuerto {
 
         for (int i = 0; i < 20; i++) {
             this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
+            this.arrayPuestos[i] = new PuestoAtencion();
         }
     }
 
-    public void entrarPasajero() {
-        
+    public Object[] irAPuestoDeInformes() {
+        Object[] resultado = new Object[2];
+        Vuelo vuelo = null;
+        Random r = new Random();
+        PuestoAtencion puesto;
 
+        // Esta parte seguramente la voy a cambiar, porque dice que el aeropuerto esta abierto siempre, pero solamente ATIENDEN de 06:00 a22:00
+        this.ingresarAeropuerto.lock();
+        try {
+            while (!atendiendo) {
+                System.out.println(Thread.currentThread().getName() + " no pudo ingresar al aeropuerto porque esta cerrado");
+                try {
+                    this.esperarPorLaHora.await();
+                } catch (Exception e) {
+                }
+            }
+        } finally {
+            this.ingresarAeropuerto.unlock();
+        }
+
+        System.out.println(Thread.currentThread().getName() + " esta ubicando su puesto de atencion...");
+        try {
+            Thread.sleep(r.nextInt(5000));
+        } catch (Exception e) {
+        }
+
+        try {
+            this.semOtorgarVuelo.acquire();
+
+            // Toma 1 vuelo de los 20 que se generaron (1 por cada puesto de Embarque)
+            vuelo = this.vuelosAerolineas[r.nextInt(20)];
+
+            // Se le asigna el turno correspondiente al puesto de atencion al que se tiene que dirigir
+            puesto = this.arrayPuestos[vuelo.getAerolinea() - 1];
+
+            // Se guarda el vuelo y el turno de Pasajero en un arreglo de Object (que depende del puesto de informe al que se dirige), para luego devolverselo al hilo Pasajero 
+            resultado[0] = vuelo;
+            resultado[1] = puesto;
+
+            this.semOtorgarVuelo.release();
+        } catch (Exception e) {
+        }
+
+        return resultado;
     }
 
-    public void entrarAPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) {
-
+    public void entrarAHallPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) {
+        puesto.ingresar(pasajero);
     }
+
+    public void guardiaTransferirPasajero(int aerolinea) {
+        this.arrayPuestos[aerolinea - 1].transferirPasajeroDesdeHallCentral();
+    }
+    
+    
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN
     public void pasarTiempo(int pasoTiempo) {

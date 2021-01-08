@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class PuestoAtencion {
 
-    private Cola colaPasajeros = new Cola();
+    private Cola colaPasajeros = new Cola(); // LinkedTransferQueue
 
     private Lock ingresarPasajero = new ReentrantLock();
     private Lock lockSacarPasajero = new ReentrantLock();

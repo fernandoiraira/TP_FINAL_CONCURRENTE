@@ -12,17 +12,19 @@ import Compartido.Aeropuerto;
  * @author Fernando Iraira <fmiraira@gmail.com>
  */
 public class Guardia implements Runnable {
-
-    private Aeropuerto aerolinea;
-
-    public Guardia(Aeropuerto aerolinea) {
+    
+    private Aeropuerto aeropuerto;
+    private int aerolinea;
+    
+    public Guardia(Aeropuerto aeropuerto, int aerolinea) {
+        this.aeropuerto = aeropuerto;
         this.aerolinea = aerolinea;
     }
-
+    
     public void run() {
         while (true) {
-            this.aerolinea.atender();
+            this.aeropuerto.guardiaTransferirPasajero(aerolinea);
         }
     }
-
+    
 }

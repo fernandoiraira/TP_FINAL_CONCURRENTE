@@ -114,12 +114,12 @@ public class Aeropuerto {
         return resultado;
     }
 
-    public void entrarAHallPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) {
-        puesto.ingresar(pasajero);
+    public void entrarAHallPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) { // Lo usa el hilo pasajero
+        puesto.ponerPasajero(pasajero);
     }
 
-    public void guardiaTransferirPasajero(int aerolinea) {
-        this.arrayPuestos[aerolinea - 1].transferirPasajeroDesdeHallCentral();
+    public void guardiaTransferirPasajero(int aerolinea) { // Lo usa el hilo guardia
+        this.arrayPuestos[aerolinea - 1].retirarPasajero();
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN

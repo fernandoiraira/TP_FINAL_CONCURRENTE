@@ -14,18 +14,18 @@ import Utiles.Vuelo;
  * @author Fernando Iraira <fmiraira@gmail.com>
  */
 public class Pasajero implements Runnable {
-    
+
     private Aeropuerto aeropuerto;
     private Object[] info;
     private Vuelo vuelo;
     private PuestoAtencion puesto;
-    
+
     public Pasajero(Aeropuerto aerolinea) {
         this.aeropuerto = aerolinea;
     }
-    
+
     public void run() {
-        
+
         info = this.aeropuerto.irAPuestoDeInformes();
         vuelo = (Vuelo) info[0];
         puesto = (PuestoAtencion) info[1];

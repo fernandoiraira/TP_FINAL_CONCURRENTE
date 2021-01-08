@@ -6,7 +6,6 @@
 package Compartido;
 
 import Hilos.Pasajero;
-import Utiles.Cola;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
@@ -17,13 +16,12 @@ import java.util.concurrent.LinkedTransferQueue;
  */
 public class PuestoAtencion {
 
-    private Cola colaPasajeros = new Cola(); // LinkedTransferQueue
     private LinkedTransferQueue linkedPasajeros = new LinkedTransferQueue();
 
-    private BlockingQueue<Pasajero> asd;
+    private BlockingQueue<Pasajero> block;
 
     public PuestoAtencion(int capMaxPuestoAtencion) {
-        this.asd = new ArrayBlockingQueue<Pasajero>(capMaxPuestoAtencion);
+        this.block = new ArrayBlockingQueue<Pasajero>(capMaxPuestoAtencion);
     }
 
     public void ponerPasajero(Pasajero p) {
@@ -39,7 +37,7 @@ public class PuestoAtencion {
         }
 
         try {
-            this.asd.put(res);
+            this.block.put(res);
             System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
         } catch (Exception e) {
         }

@@ -44,14 +44,12 @@ public class PuestoAtencion {
     }
 
     public void atenderPasajero() {
-        Pasajero p;
 
         try {
-            p = this.block.take();
-
-            System.out.println(Thread.currentThread().getName() + " esta atendiendo a un pasajero...");
-            Thread.sleep(3000);
+            System.out.println(Thread.currentThread().getName() + " esta esperando a un pasajero...");
+            this.block.take();
             
+            System.out.println(Thread.currentThread().getName() + " atendio al pasajero.");
 
         } catch (Exception e) {
         }

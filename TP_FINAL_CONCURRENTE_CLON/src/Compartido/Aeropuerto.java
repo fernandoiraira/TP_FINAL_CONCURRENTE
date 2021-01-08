@@ -122,7 +122,13 @@ public class Aeropuerto {
     }
 
     public void atender(int aerolinea) { //Lo usa la recepcionista
+        this.arrayPuestos[aerolinea - 1].atenderPasajero();
+    }
 
+    public int recibirEmbarque() {
+        Random r = new Random();
+
+        return r.nextInt(20) + 1;
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN

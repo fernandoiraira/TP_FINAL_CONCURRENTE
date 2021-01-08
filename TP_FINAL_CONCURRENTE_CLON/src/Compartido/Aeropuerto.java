@@ -59,11 +59,12 @@ public class Aeropuerto {
             this.capacidadesAtencion[i] = capPuestosAtencion;
             this.turnosAerolineas[i] = 1;
             this.turnosDesdeCero[i] = 1;
+            this.arrayPuestos[i] = new PuestoAtencion(capPuestosAtencion);
         }
 
         for (int i = 0; i < 20; i++) {
             this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
-            this.arrayPuestos[i] = new PuestoAtencion();
+
         }
     }
 
@@ -144,10 +145,6 @@ public class Aeropuerto {
                 atendiendo = false;
             }
         }
-
-    }
-
-    public void atender() {
 
     }
 

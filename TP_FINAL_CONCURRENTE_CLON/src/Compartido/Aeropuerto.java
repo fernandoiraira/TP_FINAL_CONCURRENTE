@@ -63,8 +63,7 @@ public class Aeropuerto {
         }
 
         for (int i = 0; i < 20; i++) {
-            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
-
+            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, 1700 + t.nextInt(4001));
         }
     }
 
@@ -119,7 +118,11 @@ public class Aeropuerto {
     }
 
     public void guardiaTransferirPasajero(int aerolinea) { // Lo usa el hilo guardia
-        this.arrayPuestos[aerolinea - 1].retirarPasajero();
+        this.arrayPuestos[aerolinea - 1].transferirPasajero();
+    }
+
+    public void atender(int aerolinea) { //Lo usa la recepcionista
+
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN

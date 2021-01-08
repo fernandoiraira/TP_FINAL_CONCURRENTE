@@ -9,7 +9,6 @@ import Hilos.Pasajero;
 import Utiles.Cola;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +27,11 @@ public class PuestoAtencion {
     private Lock lockSacarPasajero = new ReentrantLock();
     private Condition esperaAQueHayaPasajero = lockSacarPasajero.newCondition();
 
-    private BlockingQueue<Pasajero> asd = new ArrayBlockingQueue<Pasajero>(3);
+    private BlockingQueue<Pasajero> asd;
+
+    public PuestoAtencion(int capMaxPuestoAtencion) {
+        this.asd = new ArrayBlockingQueue<Pasajero>(capMaxPuestoAtencion);
+    }
 
     public void ingresar(Pasajero p) {
         this.ingresarPasajero.lock();
@@ -44,7 +47,7 @@ public class PuestoAtencion {
 
         this.lockSacarPasajero.lock();
         try {
-            this.esperaAQueHayaPasajero.notify();
+            this.esperaAQueHayaPasajero.signal();
         } finally {
             this.lockSacarPasajero.unlock();
         }
@@ -72,7 +75,9 @@ public class PuestoAtencion {
             this.colaPasajeros.sacar();
 
             try {
+
                 this.asd.put(p);
+                System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
             } catch (Exception e) {
             }
 

@@ -20,8 +20,8 @@ public class Pasajero implements Runnable {
     private Vuelo vuelo;
     private PuestoAtencion puesto;
 
-    public Pasajero(Aeropuerto aerolinea) {
-        this.aeropuerto = aerolinea;
+    public Pasajero(Aeropuerto aeropuerto) {
+        this.aeropuerto = aeropuerto;
     }
 
     public void run() {

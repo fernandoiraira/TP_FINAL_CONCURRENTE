@@ -87,7 +87,7 @@ public class Aeropuerto {
         try {
             this.semOtorgarVuelo.acquire();
 
-            // Toma 1 vuelo de los 20 que se generaron (1 por cada puesto de embarque)
+            // Toma 1 vuelo de los 20 que se generaron (1 por cada puesto de Embarque)
             vuelo = this.vuelosAerolineas[r.nextInt(20)];
 
             // Se le asigna el turno correspondiente al puesto de atencion al que se tiene que dirigir

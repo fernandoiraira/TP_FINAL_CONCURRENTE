@@ -19,88 +19,91 @@ public class PuestoAtencion {
     private int turnoActual = 1;
     private int turnoAtencion = 1;
 
+    private Lock lockEntrar = new ReentrantLock();
+    private Lock lockRecibirAtencion = new ReentrantLock();
+    private Condition esperaSuTurno = this.lockEntrar.newCondition();
+
     private Semaphore semEntrar;
     private Semaphore semAtender = new Semaphore(0);
     private Semaphore semSalir = new Semaphore(0);
-    private Lock lockEntrar = new ReentrantLock();
-    private Lock lockRecibirAtencion = new ReentrantLock();
-    private Condition esperaAQueHayaLugar = this.lockEntrar.newCondition();
-    private Condition esperaAQueSeaSuTurno = this.lockRecibirAtencion.newCondition();
+
+    private Semaphore mutex = new Semaphore(1);
+    private Semaphore mutex2 = new Semaphore(1);
+
+    private int cantActual = 0, cantMax;
 
     public PuestoAtencion(int capMaxPuestoAtencion) {
+        this.cantMax = capMaxPuestoAtencion;
         this.semEntrar = new Semaphore(capMaxPuestoAtencion);
     }
 
-    public void entrar() {
-        if (this.semEntrar.tryAcquire()) {
-            System.out.println(Thread.currentThread().getName() + "entro al puesto de atencion.");
-            this.semAtender.release();
+    public int recibirTurno() {
+        int turnoMio = 0;
 
-        } else {
-            System.out.println(Thread.currentThread().getName() + " no pudo entrar al centro de atencion, se dirige al Hall Central.");
-            this.entrarAlHallCentral();
-        }
-
-    }
-
-    private void entrarAlHallCentral() {
-
-    }
-
-    public int entrar() {
-        int turnoMio;
-
-        this.lockEntrar.lock();
         try {
+            this.mutex.acquire();
             turnoMio = this.turnoActual;
             this.turnoActual++;
-
-            while (this.cantActual > this.cantMax) {
-                System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al Hall Central.");
-                try {
-                    this.esperaAQueHayaLugar.await();
-                } catch (Exception e) {
-                }
-            }
-
-            System.out.println(Thread.currentThread().getName() + " entro al puesto de atencion.");
-            this.cantActual++;
-
-        } finally {
-            this.lockEntrar.unlock();
+            this.mutex.release();
+        } catch (Exception e) {
         }
 
         return turnoMio;
     }
 
+    public void entrar(int turnoPasajero) {
+
+        this.lockEntrar.lock();
+        try {
+            while (this.cantActual > this.cantMax || turnoPasajero > this.turnoAtencion + this.cantMax - 1) {
+                try {
+                    System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al hall central.");
+                    this.esperaSuTurno.await();
+                } catch (Exception e) {
+                }
+            }
+
+            System.out.println(Thread.currentThread().getName() + " pudo entrar al puesto de atencion.");
+
+            try {
+                this.mutex2.acquire();
+                this.cantActual++;
+                this.mutex2.release();
+            } catch (Exception e) {
+            }
+
+        } finally {
+            this.lockEntrar.unlock();
+        }
+
+    }
+
     public void recibirAtencion(int turnoPasajero) {
 
         this.lockRecibirAtencion.lock();
-        this.semAtender.release();
 
-        while (this.turnoAtencion != turnoPasajero) {
+        while (turnoPasajero != this.turnoAtencion) {
             try {
-                this.esperaAQueSeaSuTurno.await();
+                this.lockEntrar.lock();
+                this.esperaSuTurno.await();
+                this.lockEntrar.unlock();
             } catch (Exception e) {
             }
         }
 
+        this.semAtender.release();
+
         try {
             this.semSalir.acquire();
+
+            this.mutex2.acquire();
+            this.cantActual--;
+            this.mutex2.release();
+
         } catch (Exception e) {
         }
 
-        this.lockEntrar.lock();
-        this.cantActual--;
-        System.out.println("CANTIDAD ACTUAL" + this.cantActual);
-        this.lockEntrar.unlock();
-        System.out.println(Thread.currentThread().getName() + " salio del puesto de atencion, ya sabe su numero de embarque.");
         this.lockRecibirAtencion.unlock();
-
-        this.lockEntrar.lock();
-        System.out.println("AVISO A LOS DEMAS PASAJEROOOOOOOOS");
-        this.esperaAQueHayaLugar.signalAll();
-        this.lockEntrar.unlock();
     }
 
     public void atender() {
@@ -110,21 +113,22 @@ public class PuestoAtencion {
         }
 
         try {
-            System.out.println(Thread.currentThread().getName() + " esta atendiendo al pasajero...");
+            System.out.println(Thread.currentThread().getName() + " está atendiendo al pasajero...");
             Thread.sleep(2000);
             System.out.println(Thread.currentThread().getName() + " terminó de atender al pasajero.");
-            this.turnoAtencion++;
 
         } catch (Exception e) {
         }
 
         this.semSalir.release();
 
-        this.lockRecibirAtencion.lock();
+        this.lockEntrar.lock();
+
+        this.turnoAtencion++;
         try {
-            this.esperaAQueSeaSuTurno.signalAll();
+            this.esperaSuTurno.signalAll();
         } finally {
-            this.lockRecibirAtencion.unlock();
+            this.lockEntrar.unlock();
         }
 
     }

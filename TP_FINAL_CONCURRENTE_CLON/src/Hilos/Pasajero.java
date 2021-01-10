@@ -31,8 +31,8 @@ public class Pasajero implements Runnable {
         vuelo = (Vuelo) info[0];
         puesto = (PuestoAtencion) info[1];
         System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.vuelo.getAerolinea());
-        System.out.println(Thread.currentThread().getName() + ": Mi puesto para la aerolinea " + this.vuelo.getAerolinea() + " es: " + this.puesto);
-        this.turno = this.puesto.entrar();
+        this.turno = this.puesto.recibirTurno();
+        this.puesto.entrar(turno);
         this.puesto.recibirAtencion(this.turno);
 
         System.out.println(Thread.currentThread().getName() + " TERMINO SU EJECUCION.");

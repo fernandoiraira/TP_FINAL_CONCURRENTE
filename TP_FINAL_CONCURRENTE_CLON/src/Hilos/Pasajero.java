@@ -35,7 +35,7 @@ public class Pasajero implements Runnable {
         this.turno = this.puesto.entrar();
         this.puesto.recibirAtencion(this.turno);
 
-        this.vuelo.setPuestoDeEmbarque(this.aeropuerto.recibirEmbarque());
+        System.out.println(Thread.currentThread().getName() + " TERMINO SU EJECUCION.");
 
 //        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
     }

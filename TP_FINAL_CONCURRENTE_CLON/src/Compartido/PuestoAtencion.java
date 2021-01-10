@@ -39,8 +39,6 @@ public class PuestoAtencion {
             turnoMio = this.turnoActual;
             this.turnoActual++;
 
-            this.cantActual++;
-
             while (this.cantActual > this.cantMax) {
                 System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al Hall Central.");
                 try {
@@ -50,7 +48,8 @@ public class PuestoAtencion {
             }
 
             System.out.println(Thread.currentThread().getName() + " entro al puesto de atencion.");
-            this.semAtender.release();
+            this.cantActual++;
+
         } finally {
             this.lockEntrar.unlock();
         }
@@ -61,6 +60,7 @@ public class PuestoAtencion {
     public void recibirAtencion(int turnoPasajero) {
 
         this.lockRecibirAtencion.lock();
+        this.semAtender.release();
 
         while (this.turnoAtencion != turnoPasajero) {
             try {
@@ -74,7 +74,10 @@ public class PuestoAtencion {
         } catch (Exception e) {
         }
 
+        this.lockEntrar.lock();
         this.cantActual--;
+        System.out.println("CANTIDAD ACTUAL" + this.cantActual);
+        this.lockEntrar.unlock();
         System.out.println(Thread.currentThread().getName() + " salio del puesto de atencion, ya sabe su numero de embarque.");
         this.lockRecibirAtencion.unlock();
 

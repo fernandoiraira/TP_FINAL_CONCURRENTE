@@ -23,7 +23,6 @@ public class PuestoAtencion {
     private Lock lockRecibirAtencion = new ReentrantLock();
     private Condition esperaSuTurno = this.lockEntrar.newCondition();
 
-    private Semaphore semEntrar;
     private Semaphore semAtender = new Semaphore(0);
     private Semaphore semSalir = new Semaphore(0);
 
@@ -34,7 +33,6 @@ public class PuestoAtencion {
 
     public PuestoAtencion(int capMaxPuestoAtencion) {
         this.cantMax = capMaxPuestoAtencion;
-        this.semEntrar = new Semaphore(capMaxPuestoAtencion);
     }
 
     public int recibirTurno() {

@@ -16,10 +16,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class PuestoAtencion {
 
-    private int cantActual = 0, cantMax;
     private int turnoActual = 1;
     private int turnoAtencion = 1;
 
+    private Semaphore semEntrar;
     private Semaphore semAtender = new Semaphore(0);
     private Semaphore semSalir = new Semaphore(0);
     private Lock lockEntrar = new ReentrantLock();
@@ -28,7 +28,23 @@ public class PuestoAtencion {
     private Condition esperaAQueSeaSuTurno = this.lockRecibirAtencion.newCondition();
 
     public PuestoAtencion(int capMaxPuestoAtencion) {
-        this.cantMax = capMaxPuestoAtencion;
+        this.semEntrar = new Semaphore(capMaxPuestoAtencion);
+    }
+
+    public void entrar() {
+        if (this.semEntrar.tryAcquire()) {
+            System.out.println(Thread.currentThread().getName() + "entro al puesto de atencion.");
+            this.semAtender.release();
+
+        } else {
+            System.out.println(Thread.currentThread().getName() + " no pudo entrar al centro de atencion, se dirige al Hall Central.");
+            this.entrarAlHallCentral();
+        }
+
+    }
+
+    private void entrarAlHallCentral() {
+
     }
 
     public int entrar() {

@@ -30,7 +30,6 @@ public class Aeropuerto {
     private int[] turnosDesdeCero;
     private boolean atendiendo = false;
     private Vuelo[] vuelosAerolineas;
-    private Cola[] colaHallCentral;
 
     private Semaphore mutex = new Semaphore(1);
     private Semaphore semOtorgarVuelo = new Semaphore(1);
@@ -48,7 +47,6 @@ public class Aeropuerto {
         this.cantAerolineas = cantidadAerolineas;
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
-        this.colaHallCentral = new Cola[cantAerolineas];
         this.turnosAerolineas = new int[cantAerolineas];
         this.turnosDesdeCero = new int[cantAerolineas];
         this.arrayPuestos = new PuestoAtencion[cantAerolineas];

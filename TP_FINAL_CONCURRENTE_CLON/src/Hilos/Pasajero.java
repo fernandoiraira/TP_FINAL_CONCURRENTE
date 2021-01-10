@@ -19,6 +19,7 @@ public class Pasajero implements Runnable {
     private Object[] info;
     private Vuelo vuelo;
     private PuestoAtencion puesto;
+    private int turno;
 
     public Pasajero(Aeropuerto aeropuerto) {
         this.aeropuerto = aeropuerto;
@@ -31,10 +32,10 @@ public class Pasajero implements Runnable {
         puesto = (PuestoAtencion) info[1];
         System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.vuelo.getAerolinea());
         System.out.println(Thread.currentThread().getName() + ": Mi puesto para la aerolinea " + this.vuelo.getAerolinea() + " es: " + this.puesto);
-        this.aeropuerto.entrarAHallPuestoAtencion(this, puesto);
+        this.turno = this.puesto.entrar();
+        this.puesto.recibirAtencion(this.turno);
 
         this.vuelo.setPuestoDeEmbarque(this.aeropuerto.recibirEmbarque());
-        System.out.println("ME DIERON UN PUESTO DE EMBARQUE");
 
 //        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
     }

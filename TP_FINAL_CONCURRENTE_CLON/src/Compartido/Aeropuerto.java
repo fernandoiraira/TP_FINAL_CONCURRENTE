@@ -113,16 +113,8 @@ public class Aeropuerto {
         return resultado;
     }
 
-    public void entrarAHallPuestoAtencion(Pasajero pasajero, PuestoAtencion puesto) { // Lo usa el hilo pasajero
-        puesto.ponerPasajero(pasajero);
-    }
-
-    public void guardiaTransferirPasajero(int aerolinea) { // Lo usa el hilo guardia
-        this.arrayPuestos[aerolinea - 1].transferirPasajero();
-    }
-
     public void atender(int aerolinea) { //Lo usa la recepcionista
-        this.arrayPuestos[aerolinea - 1].atenderPasajero();
+        this.arrayPuestos[aerolinea - 1].atender();
     }
 
     public int recibirEmbarque() {

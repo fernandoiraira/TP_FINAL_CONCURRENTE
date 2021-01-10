@@ -25,7 +25,6 @@ public class Recepcionista implements Runnable {
         while (true) {
             this.aeropuerto.atender(this.aerolinea);
         }
-
     }
 
 }

@@ -5,10 +5,10 @@
  */
 package Compartido;
 
-import Hilos.Pasajero;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -16,43 +16,98 @@ import java.util.concurrent.LinkedTransferQueue;
  */
 public class PuestoAtencion {
 
-    private LinkedTransferQueue linkedPasajeros = new LinkedTransferQueue();
+    private int cantActual = 0, cantMax;
+    private int turnoActual = 1;
+    private int turnoAtencion = 1;
 
-    private BlockingQueue<Pasajero> block;
+    private Semaphore semAtender = new Semaphore(0);
+    private Semaphore semSalir = new Semaphore(0);
+    private Lock lockEntrar = new ReentrantLock();
+    private Lock lockRecibirAtencion = new ReentrantLock();
+    private Condition esperaAQueHayaLugar = this.lockEntrar.newCondition();
+    private Condition esperaAQueSeaSuTurno = this.lockRecibirAtencion.newCondition();
 
     public PuestoAtencion(int capMaxPuestoAtencion) {
-        this.block = new ArrayBlockingQueue<Pasajero>(capMaxPuestoAtencion);
+        this.cantMax = capMaxPuestoAtencion;
     }
 
-    public void ponerPasajero(Pasajero p) {
-        this.linkedPasajeros.add(p);
+    public int entrar() {
+        int turnoMio;
+
+        this.lockEntrar.lock();
+        try {
+            turnoMio = this.turnoActual;
+            this.turnoActual++;
+
+            this.cantActual++;
+
+            while (this.cantActual > this.cantMax) {
+                System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al Hall Central.");
+                try {
+                    this.esperaAQueHayaLugar.await();
+                } catch (Exception e) {
+                }
+            }
+
+            System.out.println(Thread.currentThread().getName() + " entro al puesto de atencion.");
+            this.semAtender.release();
+        } finally {
+            this.lockEntrar.unlock();
+        }
+
+        return turnoMio;
     }
 
-    public void transferirPasajero() {
-        Pasajero res = null;
+    public void recibirAtencion(int turnoPasajero) {
+
+        this.lockRecibirAtencion.lock();
+
+        while (this.turnoAtencion != turnoPasajero) {
+            try {
+                this.esperaAQueSeaSuTurno.await();
+            } catch (Exception e) {
+            }
+        }
 
         try {
-            res = (Pasajero) this.linkedPasajeros.take();
+            this.semSalir.acquire();
+        } catch (Exception e) {
+        }
+
+        this.cantActual--;
+        System.out.println(Thread.currentThread().getName() + " salio del puesto de atencion, ya sabe su numero de embarque.");
+        this.lockRecibirAtencion.unlock();
+
+        this.lockEntrar.lock();
+        System.out.println("AVISO A LOS DEMAS PASAJEROOOOOOOOS");
+        this.esperaAQueHayaLugar.signalAll();
+        this.lockEntrar.unlock();
+    }
+
+    public void atender() {
+        try {
+            this.semAtender.acquire();
         } catch (Exception e) {
         }
 
         try {
-            this.block.put(res);
-            System.out.println(Thread.currentThread().getName() + " ingreso a un pasajero a la sala de Atencion");
+            System.out.println(Thread.currentThread().getName() + " esta atendiendo al pasajero...");
+            Thread.sleep(2000);
+            System.out.println(Thread.currentThread().getName() + " terminó de atender al pasajero.");
+            this.turnoAtencion++;
+
         } catch (Exception e) {
         }
-    }
 
-    public void atenderPasajero() {
+        this.semSalir.release();
 
+        this.lockRecibirAtencion.lock();
         try {
-            System.out.println(Thread.currentThread().getName() + " esta esperando a un pasajero...");
-            this.block.take();
-            
-            System.out.println(Thread.currentThread().getName() + " atendio al pasajero.");
-
-        } catch (Exception e) {
+            this.esperaAQueSeaSuTurno.signalAll();
+        } finally {
+            this.lockRecibirAtencion.unlock();
         }
 
     }
+
 }

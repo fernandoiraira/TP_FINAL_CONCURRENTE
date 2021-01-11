@@ -120,11 +120,11 @@ public class PuestoAtencion {
         } catch (Exception e) {
         }
 
-        this.semSalir.release();
-
         this.lockEntrar.lock();
 
         this.turnoAtencion++;
+
+        this.semSalir.release();
         try {
             this.esperaSuTurno.signalAll();
         } finally {

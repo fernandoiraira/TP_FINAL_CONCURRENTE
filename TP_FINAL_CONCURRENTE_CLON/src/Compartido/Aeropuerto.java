@@ -147,22 +147,4 @@ public class Aeropuerto {
 
     }
 
-    public void dirigirseAPuestoDeAtencion(int numAerolinea) {
-
-        try {
-            this.mutex.acquire();
-            int capCentroAtencion = this.capacidadesAtencion[numAerolinea - 1];
-            if (capCentroAtencion > 0) {
-                this.capacidadesAtencion[numAerolinea - 1] -= 1;
-                System.out.println(Thread.currentThread().getName() + " entró al puesto de atencion de la aerolinea " + numAerolinea);
-            } else {
-                System.out.println("El puesto de atención de la aerolinea " + numAerolinea + " está lleno, " + Thread.currentThread().getName() + " se dirige al hall central a esperar.");
-
-            }
-            this.mutex.release();
-
-        } catch (Exception e) {
-        }
-
-    }
 }

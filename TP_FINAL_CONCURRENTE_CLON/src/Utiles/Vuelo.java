@@ -14,10 +14,13 @@ public class Vuelo {
     private int aerolinea;
     private int puestoDeEmbarque;
     private int horaVuelo;
+    //El vuelo deberia saber su puesto de embarque de antemano? o deberian indicarselo en el puesto de atencion?
 
-    public Vuelo(int aerolinea, int horaVuelo) {
+    public Vuelo(int aerolinea) {
         this.aerolinea = aerolinea;
-        this.horaVuelo = horaVuelo;
+        //--------------------------------------------------------------------------
+        //ACA IRIA LA PARTE DEL JSON
+        //--------------------------------------------------------------------------
 
         //El puesto de embarque se lo asignan en el pueso de Atencion
     }

@@ -6,7 +6,6 @@
 package Compartido;
 
 import Hilos.Pasajero;
-import Utiles.Cola;
 import Utiles.Vuelo;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -61,7 +60,7 @@ public class Aeropuerto {
         }
 
         for (int i = 0; i < 20; i++) {
-            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, 1700 + t.nextInt(4001));
+            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1);
         }
     }
 

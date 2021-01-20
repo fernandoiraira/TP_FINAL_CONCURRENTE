@@ -18,7 +18,7 @@ public class main {
 
     public static void main(String[] args) {
         int cantPasajeros = 10;
-        int cantAerolineas = 3;
+        int cantAerolineas = 1;
         int capPuestosAtencion = 2;
         int cantSegundos = 3;
 

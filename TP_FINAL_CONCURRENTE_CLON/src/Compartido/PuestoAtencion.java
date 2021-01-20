@@ -19,9 +19,8 @@ public class PuestoAtencion {
     private int turnoActual = 1;
     private int turnoAtencion = 1;
 
-    private Lock lockEntrar = new ReentrantLock();
-    private Lock lockRecibirAtencion = new ReentrantLock();
-    private Condition esperaSuTurno = this.lockEntrar.newCondition();
+    private Lock lockSimple = new ReentrantLock();
+    private Condition espera = this.lockSimple.newCondition();
 
     private Semaphore semAtender = new Semaphore(0);
     private Semaphore semSalir = new Semaphore(0);
@@ -36,6 +35,7 @@ public class PuestoAtencion {
     }
 
     public int recibirTurno() {
+        // Este metodo da un turno a cada pasajero, para poder respetar el orden de llegada
         int turnoMio = 0;
 
         try {
@@ -50,60 +50,66 @@ public class PuestoAtencion {
     }
 
     public void entrar(int turnoPasajero) {
+        // Si hay espacio, y si su turno le permite entrar (basandose en la capacidad), entra al puesto de atencion, sino se dirige al hall central
+        boolean fallo = false;
 
-        this.lockEntrar.lock();
+        this.lockSimple.lock();
         try {
             while (this.cantActual > this.cantMax || turnoPasajero > this.turnoAtencion + this.cantMax - 1) {
                 try {
-                    System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al hall central.");
-                    this.esperaSuTurno.await();
+                    if (!fallo) {
+                        System.out.println(Thread.currentThread().getName() + " no pudo entrar al puesto de atencion, se dirige al hall central.");
+                        fallo = true;
+                    }
+                    this.espera.await();
                 } catch (Exception e) {
                 }
             }
 
             System.out.println(Thread.currentThread().getName() + " pudo entrar al puesto de atencion.");
 
-            try {
-                this.mutex2.acquire();
-                this.cantActual++;
-                this.mutex2.release();
-            } catch (Exception e) {
-            }
+            //Ahora hay un pasajero mas dentro del puesto de atencion
+            this.cantActual++;
 
         } finally {
-            this.lockEntrar.unlock();
+            this.lockSimple.unlock();
         }
 
     }
 
-    public void recibirAtencion(int turnoPasajero) {
+    public void pedirAtencion(int turnoPasajero) {
 
-        this.lockRecibirAtencion.lock();
-
-        while (turnoPasajero != this.turnoAtencion) {
-            try {
-
-                // Y ACA???????????????????????????????????????????????????????????????????????????????????????
-                this.lockEntrar.lock();
-                this.esperaSuTurno.await();
-                this.lockEntrar.unlock();
-            } catch (Exception e) {
-            }
-        }
-
-        this.semAtender.release();
-
+        this.lockSimple.lock();
         try {
+            while (turnoPasajero != this.turnoAtencion) {
+                try {
+                    this.espera.await();
+                } catch (Exception e) {
+                }
+            }
+
+            //Aviso a la recepcionista que ya me puede atender
+            this.semAtender.release();
+
+        } finally {
+            this.lockSimple.unlock();
+        }
+    }
+
+    public void recibirAtencion() {
+        try {
+            // Espero a que la recepcionista termine de atenderme
             this.semSalir.acquire();
-
-            this.mutex2.acquire();
-            this.cantActual--;
-            this.mutex2.release();
-
         } catch (Exception e) {
         }
 
-        this.lockRecibirAtencion.unlock();
+        // Tomo el lock para modificar la variable cantActual
+        this.lockSimple.lock();
+        try {
+            this.cantActual--;
+        } finally {
+            this.lockSimple.unlock();
+        }
     }
 
     public void atender() {
@@ -120,15 +126,15 @@ public class PuestoAtencion {
         } catch (Exception e) {
         }
 
-        this.lockEntrar.lock();
-
-        this.turnoAtencion++;
-
-        this.semSalir.release();
+        this.lockSimple.lock();
         try {
-            this.esperaSuTurno.signalAll();
+            this.turnoAtencion++;
+
+            this.semSalir.release();
+
+            this.espera.signalAll();
         } finally {
-            this.lockEntrar.unlock();
+            this.lockSimple.unlock();
         }
 
     }

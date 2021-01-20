@@ -96,7 +96,8 @@ public class PuestoAtencion {
     }
 
     public void recibirAtencion() {
-        // A pesar de que varios hilos quedan a la espera para poder salir, se respeta el orden de salida porque el semaforo semSalir tiene el fairness en true
+        // A pesar de que varios hilos quedan a la espera para poder salir, se respeta el orden de salida porque el semaforo semSalir tiene el fairness en true.        
+        // El semSalir tiene como maximo 1 permiso disponible, porque en el metodo anterior se traban todos los hilos, excepto el que le corresponde por su turno.
         try {
             // Espero a que la recepcionista termine de atenderme
             this.semSalir.acquire();

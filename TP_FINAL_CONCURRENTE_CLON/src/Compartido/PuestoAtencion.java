@@ -23,7 +23,7 @@ public class PuestoAtencion {
     private Condition espera = this.lockSimple.newCondition();
 
     private Semaphore semAtender = new Semaphore(0);
-    private Semaphore semSalir = new Semaphore(0);
+    private Semaphore semSalir = new Semaphore(0, true);
 
     private Semaphore mutex = new Semaphore(1);
 
@@ -96,6 +96,7 @@ public class PuestoAtencion {
     }
 
     public void recibirAtencion() {
+        // A pesar de que varios hilos quedan a la espera para poder salir, se respeta el orden de salida porque el semaforo semSalir tiene el fairness en true
         try {
             // Espero a que la recepcionista termine de atenderme
             this.semSalir.acquire();

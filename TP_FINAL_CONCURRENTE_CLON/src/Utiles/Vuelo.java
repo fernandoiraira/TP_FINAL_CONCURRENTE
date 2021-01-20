@@ -15,10 +15,11 @@ public class Vuelo {
     private int puestoDeEmbarque;
     private int horaVuelo;
 
-    public Vuelo(int aerolinea, int puestoDeEmbarque, int horaVuelo) {
+    public Vuelo(int aerolinea, int horaVuelo) {
         this.aerolinea = aerolinea;
-        this.puestoDeEmbarque = puestoDeEmbarque;
         this.horaVuelo = horaVuelo;
+
+        //El puesto de embarque se lo asignan en el pueso de Atencion
     }
 
     public void setAerolinea(int aerolinea) {

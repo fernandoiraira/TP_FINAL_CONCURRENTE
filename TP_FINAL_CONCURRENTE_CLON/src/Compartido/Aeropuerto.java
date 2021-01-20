@@ -5,9 +5,12 @@
  */
 package Compartido;
 
+import Hilos.Pasajero;
 import Utiles.Cola;
 import Utiles.Vuelo;
 import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -27,13 +30,16 @@ public class Aeropuerto {
     private int[] turnosDesdeCero;
     private boolean atendiendo = false;
     private Vuelo[] vuelosAerolineas;
-    private Cola[] ordenEntrada;
 
     private Semaphore mutex = new Semaphore(1);
     private Semaphore semOtorgarVuelo = new Semaphore(1);
+    private Semaphore semIngresarPasajero = new Semaphore(1);
 
     private Lock ingresarAeropuerto = new ReentrantLock();
     private Condition esperarPorLaHora = ingresarAeropuerto.newCondition();
+    private PuestoAtencion arrayPuestos[];
+
+    private BlockingQueue<Pasajero> asd = new ArrayBlockingQueue<Pasajero>(3);
 
     public Aeropuerto(int cantidadAerolineas, int capTren, int capPuestosAtencion) {
         Random t = new Random();
@@ -41,9 +47,9 @@ public class Aeropuerto {
         this.cantAerolineas = cantidadAerolineas;
         this.capMaxTren = capTren;
         this.capacidadesAtencion = new int[cantAerolineas];
-        this.ordenEntrada = new Cola[cantAerolineas];
         this.turnosAerolineas = new int[cantAerolineas];
         this.turnosDesdeCero = new int[cantAerolineas];
+        this.arrayPuestos = new PuestoAtencion[cantAerolineas];
 
         this.vuelosAerolineas = new Vuelo[20];
 
@@ -51,10 +57,11 @@ public class Aeropuerto {
             this.capacidadesAtencion[i] = capPuestosAtencion;
             this.turnosAerolineas[i] = 1;
             this.turnosDesdeCero[i] = 1;
+            this.arrayPuestos[i] = new PuestoAtencion(capPuestosAtencion);
         }
 
         for (int i = 0; i < 20; i++) {
-            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, t.nextInt(20) + 1, 1700 + t.nextInt(4001));
+            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, 1700 + t.nextInt(4001));
         }
     }
 
@@ -62,7 +69,7 @@ public class Aeropuerto {
         Object[] resultado = new Object[2];
         Vuelo vuelo = null;
         Random r = new Random();
-        int turnoPasajero;
+        PuestoAtencion puesto;
 
         // Esta parte seguramente la voy a cambiar, porque dice que el aeropuerto esta abierto siempre, pero solamente ATIENDEN de 06:00 a22:00
         this.ingresarAeropuerto.lock();
@@ -91,20 +98,27 @@ public class Aeropuerto {
             vuelo = this.vuelosAerolineas[r.nextInt(20)];
 
             // Se le asigna el turno correspondiente al puesto de atencion al que se tiene que dirigir
-            turnoPasajero = this.turnosDesdeCero[vuelo.getAerolinea() - 1];
-
-            // Se sube el turno al puesto de atencion al que se dirigio el pasajero
-            this.turnosDesdeCero[vuelo.getAerolinea() - 1]++;
+            puesto = this.arrayPuestos[vuelo.getAerolinea() - 1];
 
             // Se guarda el vuelo y el turno de Pasajero en un arreglo de Object (que depende del puesto de informe al que se dirige), para luego devolverselo al hilo Pasajero 
             resultado[0] = vuelo;
-            resultado[1] = turnoPasajero;
+            resultado[1] = puesto;
 
             this.semOtorgarVuelo.release();
         } catch (Exception e) {
         }
 
         return resultado;
+    }
+
+    public void atender(int aerolinea) { //Lo usa la recepcionista
+        this.arrayPuestos[aerolinea - 1].atender();
+    }
+
+    public int recibirEmbarque() {
+        Random r = new Random();
+
+        return r.nextInt(20) + 1;
     }
 
     // TENGO QUE EVITAR QUE ENTREN EN HORARIOS QUE NO SE PUEDEN
@@ -133,26 +147,4 @@ public class Aeropuerto {
 
     }
 
-    public void atender() {
-
-    }
-
-    public void dirigirseAPuestoDeAtencion(int numAerolinea) {
-
-        try {
-            this.mutex.acquire();
-            int capCentroAtencion = this.capacidadesAtencion[numAerolinea - 1];
-            if (capCentroAtencion > 0) {
-                this.capacidadesAtencion[numAerolinea - 1] -= 1;
-                System.out.println(Thread.currentThread().getName() + " entró al puesto de atencion de la aerolinea " + numAerolinea);
-            } else {
-                System.out.println("El puesto de atención de la aerolinea " + numAerolinea + " está lleno, " + Thread.currentThread().getName() + " se dirige al hall central a esperar.");
-
-            }
-            this.mutex.release();
-
-        } catch (Exception e) {
-        }
-
-    }
 }

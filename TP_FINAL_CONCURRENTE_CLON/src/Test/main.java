@@ -7,6 +7,7 @@ package Test;
 
 import Compartido.Aeropuerto;
 import Hilos.Pasajero;
+import Hilos.Recepcionista;
 import Hilos.Reloj;
 
 /**
@@ -16,21 +17,27 @@ import Hilos.Reloj;
 public class main {
 
     public static void main(String[] args) {
-        int cantPasajeros = 55;
-        int cantAerolineas = 3;
-        int capPuestosAtencion = 1;
-        int cantSegundos = 2;
+        int cantPasajeros = 18;
+        int cantAerolineas = 5;
+        int capPuestosAtencion = 2;
+        int cantSegundos = 3;  // Cada cantSegundos pasa 1 hora
 
         int capMaxTren = 4;
 
-        Aeropuerto aerolinea = new Aeropuerto(cantAerolineas, capMaxTren, capPuestosAtencion);
+        Aeropuerto aeropuerto = new Aeropuerto(cantAerolineas, capMaxTren, capPuestosAtencion);
 
-        Reloj r = new Reloj(aerolinea, cantSegundos);
+        Reloj r = new Reloj(aeropuerto, cantSegundos);
         Thread reloj = new Thread(r, "RELOJ");
         reloj.start();
 
+        for (int i = 1; i <= cantAerolineas; i++) {
+            Recepcionista rece = new Recepcionista(aeropuerto, i);
+            Thread recepcionista = new Thread(rece, "RECEPCIONISTA " + i);
+            recepcionista.start();
+        }
+
         for (int i = 1; i <= cantPasajeros; i++) {
-            Pasajero p = new Pasajero(aerolinea);
+            Pasajero p = new Pasajero(aeropuerto);
             Thread pasajero = new Thread(p, "PASAJERO " + i);
             pasajero.start();
         }

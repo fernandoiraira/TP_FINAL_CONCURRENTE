@@ -6,6 +6,7 @@
 package Hilos;
 
 import Compartido.Aeropuerto;
+import Compartido.PuestoAtencion;
 import Utiles.Vuelo;
 
 /**
@@ -17,19 +18,25 @@ public class Pasajero implements Runnable {
     private Aeropuerto aeropuerto;
     private Object[] info;
     private Vuelo vuelo;
+    private PuestoAtencion puesto;
     private int turno;
 
-    public Pasajero(Aeropuerto aerolinea) {
-        this.aeropuerto = aerolinea;
+    public Pasajero(Aeropuerto aeropuerto) {
+        this.aeropuerto = aeropuerto;
     }
 
     public void run() {
 
         info = this.aeropuerto.irAPuestoDeInformes();
         vuelo = (Vuelo) info[0];
-        turno = (int) info[1];
+        puesto = (PuestoAtencion) info[1];
         System.out.println(Thread.currentThread().getName() + ": Me tocó la aerolinea " + this.vuelo.getAerolinea());
-        System.out.println(Thread.currentThread().getName() + ": Mi turno para la aerolinea " + this.vuelo.getAerolinea() + " es: " + this.turno);
-//        this.aeropuerto.dirigirseAPuestoDeAtencion(this.vuelo.getAerolinea());
+        this.turno = this.puesto.recibirTurno();
+        this.puesto.entrar(turno);
+        this.puesto.pedirAtencion(this.turno);
+        this.puesto.recibirAtencion();
+
+        System.out.println(Thread.currentThread().getName() + " TERMINO SU EJECUCION.");
+
     }
 }

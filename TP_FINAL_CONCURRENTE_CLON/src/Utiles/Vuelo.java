@@ -14,6 +14,7 @@ public class Vuelo {
     private int aerolinea;
     private int puestoDeEmbarque;
     private int horaVuelo;
+    //El vuelo deberia saber su puesto de atencion de antemano? o deberian indicarselo en el puesto de atencion?
 
     public Vuelo(int aerolinea, int horaVuelo) {
         this.aerolinea = aerolinea;

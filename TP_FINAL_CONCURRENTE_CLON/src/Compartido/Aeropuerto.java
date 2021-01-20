@@ -6,7 +6,6 @@
 package Compartido;
 
 import Hilos.Pasajero;
-import Utiles.Cola;
 import Utiles.Vuelo;
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;

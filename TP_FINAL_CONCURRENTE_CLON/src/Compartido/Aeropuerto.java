@@ -60,7 +60,7 @@ public class Aeropuerto {
         }
 
         for (int i = 0; i < 20; i++) {
-            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1, 1700 + t.nextInt(4001));
+            this.vuelosAerolineas[i] = new Vuelo(t.nextInt(cantidadAerolineas) + 1);
         }
     }
 

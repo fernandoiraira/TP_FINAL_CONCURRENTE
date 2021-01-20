@@ -37,6 +37,8 @@ public class Pasajero implements Runnable {
         this.puesto.recibirAtencion();
 
         System.out.println(Thread.currentThread().getName() + " TERMINO SU EJECUCION.");
+        
+        //POR ACA DEBERIA ENTRAR AL TREN, PASANDOLE COMO PARAMETRO EL NUMERO DE EMBARQUE
 
     }
 }

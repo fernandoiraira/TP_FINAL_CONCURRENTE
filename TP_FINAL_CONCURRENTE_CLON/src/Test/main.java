@@ -17,8 +17,8 @@ import Hilos.Reloj;
 public class main {
 
     public static void main(String[] args) {
-        int cantPasajeros = 10;
-        int cantAerolineas = 1;
+        int cantPasajeros = 25;
+        int cantAerolineas = 5;
         int capPuestosAtencion = 2;
         int cantSegundos = 3;
 

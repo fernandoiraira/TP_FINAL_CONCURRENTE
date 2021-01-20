@@ -26,7 +26,6 @@ public class PuestoAtencion {
     private Semaphore semSalir = new Semaphore(0);
 
     private Semaphore mutex = new Semaphore(1);
-    private Semaphore mutex2 = new Semaphore(1);
 
     private int cantActual = 0, cantMax;
 
